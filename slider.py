@@ -2,6 +2,7 @@ import numpy as np
 import imutils
 import cv2
 import time
+import math
 from featuresourcer import FeatureSourcer
 from binaryclassifier import BinaryClassifier
 
@@ -76,21 +77,28 @@ class Slider:
     return boxes"""
 
       
-  def sliding_window(self,image, stepSize, windowSize):
+  def sliding_window(self,image, step_size, window_size):
     # slide a window across the image
-    for y in range(0, image.shape[0], stepSize):
-      for x in range(0, image.shape[1], stepSize):
+    for y in range(0, image.shape[0], step_size):
+      for x in range(0, image.shape[1], step_size):
         # yield the current window
-        yield (x, y, image[y:y + windowSize[1], x:x + windowSize[0]])
+        yield (x, y, image[y:y + window_size[1], x:x + window_size[0]])
 
 
-  def locate(self, image, window_size, window_position):
+  def locate(self, image):
     boxes = []
-    w_w,w_h = window_size
+    w_w,w_h = self.w,self.h
     # loop over the image pyramid
-    for resized in self.pyramid(image=image, scale=1.5):
+    scale = 1.5
+    iteration = 0
+    step_size = 32
+    for resized in self.pyramid(image=image, scale=scale):
+      print("iteration ", iteration)
+      print("image dim", resized.shape)
       # loop over the sliding window for each layer of the pyramid
-      for (x, y, window) in self.sliding_window(resized, stepSize=32, windowSize=(w_w, w_h)):
+      step_size = max(1,int(32/(pow(scale,iteration))))
+      print("STEP SIZE ",step_size)
+      for (x, y, window) in self.sliding_window(resized, step_size=step_size, window_size=(w_w, w_h)):
         # if the window does not meet our desired window size, ignore it
         if window.shape[0] != w_h or window.shape[1] != w_w:
           continue
@@ -98,13 +106,18 @@ class Slider:
         # MACHINE LEARNING CLASSIFIER TO CLASSIFY THE CONTENTS OF THE
         # WINDOW
         # since we do not have a classifier, we'll just draw the window
-        print("X ",x," Y ",y, " W_W ",w_w," W_H ",w_h, "WINDOW SHAPE ",window.shape)
+        #print("X ",x," Y ",y, " W_W ",w_w," W_H ",w_h, "WINDOW SHAPE ",window.shape)
         features = self.sourcer.slice(x, y, w_w, w_h) # get hog 
-        print(" FEATURE SHAPE ", features.shape)
+        #print(features[:100])
+        #print(" FEATURE SHAPE ", features.shape)
         #print(self.classifier.predict(features))
-        #if self.classifier.predict(features): 
-        #  boxes.append((x, y, window_size))
-        
+        if self.classifier.predict(features): 
+          if(iteration==5):
+              boxes.append((int(x*math.pow(scale,iteration)), int(y*math.pow(scale,iteration)), (int(w_w*math.pow(scale,iteration)),int(w_h*math.pow(scale,iteration)))))
+              #print(w_w*math.pow(scale,iteration))
+              #print(w_h*math.pow(scale,iteration))
+
+      iteration = iteration + 1
   
         #clone = resized.copy()
         #cv2.rectangle(clone, (x, y), (x + w_w, y + w_h), (0, 255, 0), 2)

@@ -45,13 +45,13 @@ class FeatureSourcer:
   def slice(self, x_pix, y_pix, w_pix = None, h_pix = None):
         
     x_start, x_end, y_start, y_end = self.pix_to_hog(x_pix, y_pix, h_pix, w_pix)
-    print(" x_start ", x_start," x_end ",x_end," y_start ",y_start," Y_end ",y_end)
+    #print(" x_start ", x_start," x_end ",x_end," y_start ",y_start," Y_end ",y_end)
     hogA = self.hogA[y_start: y_end, x_start: x_end].ravel()
     hogB = self.hogB[y_start: y_end, x_start: x_end].ravel()
     hogC = self.hogC[y_start: y_end, x_start: x_end].ravel()
     
     hog = np.hstack((hogA, hogB, hogC))
-    print(" SLICE SHAPE ", hogA.shape)
+    #print(" SLICE SHAPE ", hogA.shape)
     return hog 
 
   def features(self, frame):
@@ -62,7 +62,7 @@ class FeatureSourcer:
     return self.RGB_img, self.hogA_img, self.hogB_img, self.hogC_img
 
   def pix_to_hog(self, x_pix, y_pix, h_pix, w_pix):
-    print(" PIX TO HOG DI x", x_pix," y ",y_pix," h_pix ",h_pix," w_pix ",w_pix)
+    #print(" PIX TO HOG DI x", x_pix," y ",y_pix," h_pix ",h_pix," w_pix ",w_pix)
     if h_pix is None and w_pix is None: 
       h_pix, w_pix = self.h, self.w
     

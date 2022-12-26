@@ -20,19 +20,27 @@ def convert(frame, src_model = "rgb", dest_model = "hls"):
 def show_images(imgs, per_row = 3, per_col = 2, W = 10, H = 5, tdpi = 80):
       
   fig, ax = plt.subplots(per_col, per_row, figsize = (W, H), dpi = tdpi)
-  ax = ax.ravel()
+  try:
+    ax = ax.ravel()
+    for i in range(len(imgs)):
+      img = imgs[i]
+      ax[i].imshow(img)
+    
+    for i in range(per_row * per_col):
+      ax[i].axis('off')
+  except:
+    for i in range(len(imgs)):
+      img = imgs[i]
+      ax.imshow(img)
+    for i in range(per_row * per_col):
+      ax.axis('off')
   
-  for i in range(len(imgs)):
-    img = imgs[i]
-    ax[i].imshow(img)
-  
-  for i in range(per_row * per_col):
-    ax[i].axis('off')
 
 
 def box_boundaries(box):
+  w,h = box[2]
   x1, y1 = box[0], box[1]
-  x2, y2 = box[0] + box[2], box[1] + box[2]  
+  x2, y2 = box[0] + w, box[1] + h 
   return x1, y1, x2, y2
 
 def put_boxes(frame, boxes, color = (255, 0, 0), thickness = 10):
