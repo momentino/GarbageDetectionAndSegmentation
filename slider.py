@@ -91,7 +91,7 @@ class Slider:
     # loop over the image pyramid
     scale = 1.5
     iteration = 0
-    step_size = 32
+    step_size = self.i
     for resized in self.pyramid(image=image, scale=scale):
       print("iteration ", iteration)
       print("image dim", resized.shape)
@@ -112,7 +112,7 @@ class Slider:
         #print(" FEATURE SHAPE ", features.shape)
         #print(self.classifier.predict(features))
         if self.classifier.predict(features): 
-          if(iteration==5):
+          if(iteration==7):
               boxes.append((int(x*math.pow(scale,iteration)), int(y*math.pow(scale,iteration)), (int(w_w*math.pow(scale,iteration)),int(w_h*math.pow(scale,iteration)))))
               #print(w_w*math.pow(scale,iteration))
               #print(w_h*math.pow(scale,iteration))

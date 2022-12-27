@@ -16,6 +16,7 @@ class HeatMap:
     self.thresh = thresh
     self.memory = memory
     self.history = []
+    self.final_bounding_boxes = []
 
   def reset(self):
     self.map = np.copy(self.blank)
@@ -64,6 +65,7 @@ class HeatMap:
       xs, ys = np.array(coords[1]), np.array(coords[0])
       p1 = (np.min(xs), np.min(ys))
       p2 = (np.max(xs), np.max(ys))
+      self.final_bounding_boxes.append((p1,p2))
       cv2.rectangle(this_frame, p1, p2, color, thickness)
     
     return this_frame
@@ -83,3 +85,6 @@ class HeatMap:
 
     for i in range(4):
       ax[i].axis('off')
+
+  def get_final_bounding_boxes(self):
+    return self.final_bounding_boxes
