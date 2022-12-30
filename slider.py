@@ -3,8 +3,7 @@ import imutils
 import cv2
 import time
 import math
-from featuresourcer import FeatureSourcer
-from binaryclassifier import BinaryClassifier
+
 
 class Slider:
   
