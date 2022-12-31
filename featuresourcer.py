@@ -52,7 +52,7 @@ class HogFeatureExtractor:
     hogC = self.hogC[y_start: y_end, x_start: x_end].ravel()
     
     hog = np.hstack((hogA, hogB, hogC))
-    print(" HOG SHAPEEEEE ",hog.shape)
+
     #print(" SLICE SHAPE ", hogA.shape)
     return hog 
 
@@ -84,6 +84,9 @@ class CannyFeatureExtractor:
 
     self.first_thresh = p['first_thresh']
     self.second_thresh = p['second_thresh']
+
+    self.w = p['bounding_box_w']
+    self.h = p['bounding_box_h']
     
     self.RGB_img = start_frame
     self.ABC_img = None
