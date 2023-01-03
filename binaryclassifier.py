@@ -11,4 +11,4 @@ class BinaryClassifier:
   def predict(self, f):
     f = self.scaler.transform([f])
     r = self.svc.predict(f)
-    return np.int(r[0]) 
+    return int(r[0]) 

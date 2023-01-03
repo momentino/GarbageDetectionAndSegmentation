@@ -8,7 +8,7 @@ class HeatMap:
 
   def __init__(self, frame, memory, thresh):
     
-    self.blank = np.zeros_like(frame[:, :, 0]).astype(np.float)
+    self.blank = np.zeros_like(frame[:, :, 0]).astype(float)
     self.map = np.copy(self.blank)
     self.thresholded_map = None
     self.labeled_map = None
@@ -24,7 +24,8 @@ class HeatMap:
 
   def do_threshold(self):
     self.thresholded_map = np.copy(self.map)
-    self.thresholded_map[self.map < self.thresh] = 0
+    self.thresholded_map[self.map < int(np.amax(self.map)*0.6)] = 0
+
         
   def get(self):
     self.do_threshold()
@@ -66,6 +67,7 @@ class HeatMap:
       p1 = (np.min(xs), np.min(ys))
       p2 = (np.max(xs), np.max(ys))
       self.final_bounding_boxes.append((p1,p2))
+
       cv2.rectangle(this_frame, p1, p2, color, thickness)
     
     return this_frame
@@ -79,9 +81,11 @@ class HeatMap:
     ax = ax.ravel()
 
     ax[0].imshow(np.clip( mp, 0, 255), cmap = 'hot')
+
     ax[1].imshow(np.clip(tmp, 0, 255), cmap = 'hot')
     ax[2].imshow(np.clip(lmp, 0, 255), cmap = 'gray')
     ax[3].imshow(labeled_img)
+    plt.show()
 
     for i in range(4):
       ax[i].axis('off')

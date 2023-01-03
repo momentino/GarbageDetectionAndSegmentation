@@ -49,32 +49,6 @@ class Slider:
         break
       # yield the next image in the pyramid
       yield image
-
-  """def locate(self, frame, window_size, window_position):
-    print("WINDOW SIZE ",window_size)
-    w_w,w_h = window_size
-    x,y = window_position
-    scaler, strip = self.prepare(frame, window_position, window_size)
-    
-    boxes = []
-    self.sourcer.new_frame(strip)
-    
-    x_end = (strip.shape[1] // self.w - 1) * self.w
-    y_end = (strip.shape[0] // self.h - 1) * self.h
-    print("strip shape ",strip.shape," i ",self.i)
-    print("X_END ",x_end, "Y_END ",y_end)
-    for resized_y in range(0, x_end, self.i):
-      for resized_x in range(0, y_end, self.i):
-        print("scorro")
-        features = self.sourcer.slice(resized_x, resized_y, self.w, self.h) # get hog 
-        print(self.classifier.predict(features))
-        if self.classifier.predict(features): 
-          
-          x = np.int(scaler * resized_x)
-          boxes.append((x, y, window_size))
-        
-    return boxes"""
-
       
   def sliding_window(self,image, step_size, window_size):
     # slide a window across the image
@@ -87,16 +61,17 @@ class Slider:
   def locate(self, image):
     boxes = []
     w_w,w_h = self.w,self.h
+    print("WINDOW SIZE ",w_w," ",w_h)
     # loop over the image pyramid
     scale = 1.5
     iteration = 0
     step_size = self.i
     for resized in self.pyramid(image=image, scale=scale):
-      print("iteration ", iteration)
-      print("image dim", resized.shape)
+      #print("iteration ", iteration)
+      #print("image dim", resized.shape)
       # loop over the sliding window for each layer of the pyramid
       step_size = max(1,int(32/(pow(scale,iteration))))
-      print("STEP SIZE ",step_size)
+      #Sprint("STEP SIZE ",step_size)
       for (x, y, window) in self.sliding_window(resized, step_size=step_size, window_size=(w_w, w_h)):
         # if the window does not meet our desired window size, ignore it
         if window.shape[0] != w_h or window.shape[1] != w_w:
@@ -111,8 +86,8 @@ class Slider:
         #print(" FEATURE SHAPE ", features.shape)
         #print(self.classifier.predict(features))
         if self.classifier.predict(features): 
-          if(iteration==7):
-              boxes.append((int(x*math.pow(scale,iteration)), int(y*math.pow(scale,iteration)), (int(w_w*math.pow(scale,iteration)),int(w_h*math.pow(scale,iteration)))))
+          if(iteration>=5 and iteration <=7):
+            boxes.append((int(x*math.pow(scale,iteration)), int(y*math.pow(scale,iteration)), (int(w_w*math.pow(scale,iteration)),int(w_h*math.pow(scale,iteration)))))
               #print(w_w*math.pow(scale,iteration))
               #print(w_h*math.pow(scale,iteration))
 
