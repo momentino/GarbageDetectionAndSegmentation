@@ -18,7 +18,7 @@ class WatershedSegmenter:
             y_min,y_max = box[0][1],box[1][1]
             cropped_region = self.image[y_min:y_max, x_min:x_max]
 
-            cropped_region = cv2.cvtColor(cropped_region, cv2.COLOR_HLS2RGB)
+            #cropped_region = cv2.cvtColor(cropped_region, cv2.COLOR_HLS2RGB)
             # Create a kernel that we will use to sharpen our image
             # an approximation of second derivative, a quite strong kernel
             #kernel = np.array([[1, 1, 1], [1, -8, 1], [1, 1, 1]], dtype=np.float32)

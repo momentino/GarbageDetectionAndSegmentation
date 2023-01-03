@@ -6,14 +6,13 @@ import matplotlib.pyplot as plt
 
 class HeatMap:
 
-  def __init__(self, frame, memory, thresh):
+  def __init__(self, frame, memory):
     
     self.blank = np.zeros_like(frame[:, :, 0]).astype(float)
     self.map = np.copy(self.blank)
     self.thresholded_map = None
     self.labeled_map = None
     self.samples_found = 0
-    self.thresh = thresh
     self.memory = memory
     self.history = []
     self.final_bounding_boxes = []
@@ -60,14 +59,30 @@ class HeatMap:
     
     this_frame = frame.copy()
     _, _, this_map = self.get()
-    
+    candidate_bounding_boxes = []
     for n in range(1, self.samples_found + 1):
       coords =  (this_map == n).nonzero()
       xs, ys = np.array(coords[1]), np.array(coords[0])
       p1 = (np.min(xs), np.min(ys))
       p2 = (np.max(xs), np.max(ys))
-      self.final_bounding_boxes.append((p1,p2))
+      candidate_bounding_boxes.append((p1,p2))
 
+    for i,box in enumerate(candidate_bounding_boxes):
+      x1_i, y1_i = box[0]
+      x2_i, y2_i = box[1]
+      not_included = True
+      for j,box2 in enumerate(candidate_bounding_boxes):
+        if i != j:
+          x1_j, y1_j = box2[0]
+          x2_j, y2_j = box2[1]
+          if((x1_j<x1_i) and (x2_j>x2_i) and (y1_j <y1_i) and (y2_j>y2_i)):
+            not_included = False
+            break
+      if(not_included == True):
+        self.final_bounding_boxes.append((box))
+    self.final_bounding_boxes = list(dict.fromkeys(self.final_bounding_boxes))
+    for box in self.final_bounding_boxes:
+      p1,p2 = box[0],box[1]
       cv2.rectangle(this_frame, p1, p2, color, thickness)
     
     return this_frame
@@ -77,17 +92,16 @@ class HeatMap:
     mp, tmp, lmp = self.get()
     labeled_img = self.draw(frame)
     
-    fig, ax = plt.subplots(1, 4, figsize = (15, 8), dpi = tdpi)
+    fig, ax = plt.subplots(1, 3, figsize = (15, 8), dpi = tdpi)
     ax = ax.ravel()
 
     ax[0].imshow(np.clip( mp, 0, 255), cmap = 'hot')
 
     ax[1].imshow(np.clip(tmp, 0, 255), cmap = 'hot')
-    ax[2].imshow(np.clip(lmp, 0, 255), cmap = 'gray')
-    ax[3].imshow(labeled_img)
+    ax[2].imshow(labeled_img)
     plt.show()
 
-    for i in range(4):
+    for i in range(3):
       ax[i].axis('off')
 
   def get_final_bounding_boxes(self):

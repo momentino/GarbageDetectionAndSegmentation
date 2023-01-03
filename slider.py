@@ -86,7 +86,7 @@ class Slider:
         #print(" FEATURE SHAPE ", features.shape)
         #print(self.classifier.predict(features))
         if self.classifier.predict(features): 
-          if(iteration>=5 and iteration <=7):
+          if(iteration>=6):
             boxes.append((int(x*math.pow(scale,iteration)), int(y*math.pow(scale,iteration)), (int(w_w*math.pow(scale,iteration)),int(w_h*math.pow(scale,iteration)))))
               #print(w_w*math.pow(scale,iteration))
               #print(w_h*math.pow(scale,iteration))
