@@ -1,4 +1,5 @@
 from skimage.feature import hog
+from skimage import exposure
 import numpy as np
 from utils import convert 
 import cv2
@@ -54,14 +55,15 @@ class HogFeatureExtractor:
     hog = np.hstack((hogA, hogB, hogC))
 
     #print(" SLICE SHAPE ", hogA.shape)
-    return hog 
+    return hog
 
   def features(self, frame):
     self.new_frame(frame)
     return self.slice(0, 0, frame.shape[1], frame.shape[0])
 
   def visualize(self):
-    return self.RGB_img, self.hogA_img, self.hogB_img, self.hogC_img
+
+    return self.RGB_img, exposure.rescale_intensity(self.hogA_img, in_range=(0, 10)), exposure.rescale_intensity(self.hogB_img, in_range=(0, 10)), exposure.rescale_intensity(self.hogC_img, in_range=(0, 255))
 
   def pix_to_hog(self, x_pix, y_pix, h_pix, w_pix):
     #print(" PIX TO HOG DI x", x_pix," y ",y_pix," h_pix ",h_pix," w_pix ",w_pix)
@@ -91,8 +93,8 @@ class CannyFeatureExtractor:
     self.RGB_img = start_frame
     self.ABC_img = None
 
-    self.cannyA_img,self.cannyB_img,self.cannyC_img = None, None, None
-    self.cannyA_features, self.cannyB_features, self.cannyC_features = None, None, None
+    self.canny_img = None
+    self.canny_features = None
 
     self.new_frame(self.RGB_img)
 
@@ -134,11 +136,9 @@ class CannyFeatureExtractor:
 
     mask = np.zeros(canny_img.shape,np.uint8)
     cv2.drawContours(mask,[max_cnt],0,255,-1)
-    pixelpoints = np.transpose(np.nonzero(mask))
 
     features = np.array([area,hull_area, perimeter,orientation, extent, solidity, equi_diameter])
-    #print(" FEATURES ",features)
-    #print(" FEATURE TYPE ",features.dtype)
+
 
     
     return features, canny_img
@@ -149,49 +149,21 @@ class CannyFeatureExtractor:
     self.ABC_img = convert(frame, src_model= 'rgb', dest_model = self.color_model)
     self.dims = self.RGB_img.shape
 
-
-
-    #(B, G, R) = cv2.split( self.ABC_img)
     B = cv2.cvtColor(self.ABC_img, cv2.COLOR_BGR2GRAY)
     _, B = cv2.threshold(B, 40, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
-   # G = cv2.cvtColor(self.ABC_img, cv2.COLOR_BGR2GRAY)
-    #_, G = cv2.threshold(G, 40, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
-   # R = cv2.cvtColor(self.ABC_img, cv2.COLOR_BGR2GRAY)
-    #_, R = cv2.threshold(R, 40, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
-    self.cannyA_features, self.cannyA_img = self.canny(B)
-    #self.cannyB_features, self.cannyB_img = self.canny(G)
-    #self.cannyC_features, self.cannyC_img = self.canny(R)
-    
-    
-  def slice(self, x_pix, y_pix, w_pix = None, h_pix = None):
-        
-    #x_start, x_end, y_start, y_end = self.pix_to_hog(x_pix, y_pix, h_pix, w_pix)
-    #print(" x_start ", x_start," x_end ",x_end," y_start ",y_start," Y_end ",y_end)
-    #hogA = self.hogA[y_start: y_end, x_start: x_end].ravel()
-    #hogB = self.hogB[y_start: y_end, x_start: x_end].ravel()
-   # hogC = self.hogC[y_start: y_end, x_start: x_end].ravel()
 
-    #features = np.stack((self.cannyA_features, self.cannyB_features, self.cannyC_features)) 
-    features = self.cannyA_features
+    self.canny_features, self.canny_img = self.canny(B)
+    
+    
+  def slice(self):
+
+    features = self.canny_features
     return features
 
   def features(self, frame):
     self.new_frame(frame)
-    return self.slice(0, 0, frame.shape[1], frame.shape[0])
+    return self.slice()
 
   def visualize(self):
-    return self.RGB_img, self.cannyA_img, self.cannyB_img, self.cannyC_img
+    return self.RGB_img, self.canny_img
 
-  """def pix_to_hog(self, x_pix, y_pix, h_pix, w_pix):
-    #print(" PIX TO HOG DI x", x_pix," y ",y_pix," h_pix ",h_pix," w_pix ",w_pix)
-    if h_pix is None and w_pix is None: 
-      h_pix, w_pix = self.h, self.w
-    
-    h = h_pix // self.ppc[0]
-    w = w_pix // self.ppc[0]
-    y_start = y_pix // self.ppc[0]
-    x_start = x_pix // self.ppc[0]
-    y_end = y_start + h - 1
-    x_end = x_start + w - 1
-    
-    return x_start, x_end, y_start, y_end"""

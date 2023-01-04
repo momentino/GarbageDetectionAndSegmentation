@@ -1,7 +1,5 @@
 import numpy as np
 import cv2
-from matplotlib import pyplot as plt
-from PIL import Image
 
 import random as rng
 rng.seed(12345)
