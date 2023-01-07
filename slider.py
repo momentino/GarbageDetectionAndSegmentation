@@ -48,19 +48,21 @@ class Slider:
     iteration = 0
     step_size = self.i
     for resized in self.pyramid(image=image, scale=scale):
-      # loop over the sliding window for each layer of the pyramid
-      step_size = max(1,int(32/(pow(scale,iteration))))
-      #Sprint("STEP SIZE ",step_size)
-      for (x, y, window) in self.sliding_window(resized, step_size=step_size, window_size=(w_w, w_h)):
-        # if the window does not meet our desired window size, ignore it
-        if window.shape[0] != w_h or window.shape[1] != w_w:
-          continue
-        if(type(self.sourcer) is HogFeatureExtractor):
-          features = self.sourcer.slice(x, y, w_w, w_h) # get hog
-        elif(type(self.sourcer) is CannyFeatureExtractor):
-          features = self.sourcer.slice() # get canny
-        if self.classifier.predict(features): 
-          if(iteration==7):
+      if (int(resized.shape[1]/w_w) <= 3 and int(resized.shape[0]/w_h) <= 3):
+        # loop over the sliding window for each layer of the pyramid
+        step_size = max(1,int(32/(pow(scale,iteration))))
+        #Sprint("STEP SIZE ",step_size)
+        for (x, y, window) in self.sliding_window(resized, step_size=step_size, window_size=(w_w, w_h)):
+          # if the window does not meet our desired window size, ignore it
+          if window.shape[0] != w_h or window.shape[1] != w_w:
+            continue
+
+          if(type(self.sourcer) is HogFeatureExtractor):
+            features = self.sourcer.slice(x, y, w_w, w_h) # get hog
+          elif(type(self.sourcer) is CannyFeatureExtractor):
+            features = self.sourcer.slice() # get canny
+          if self.classifier.predict(features):
+            #if(iteration==7):
             boxes.append((int(x*math.pow(scale,iteration)), int(y*math.pow(scale,iteration)), (int(w_w*math.pow(scale,iteration)),int(w_h*math.pow(scale,iteration)))))
 
 

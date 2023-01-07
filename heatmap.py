@@ -103,6 +103,5 @@ class HeatMap:
 
     for i in range(3):
       ax[i].axis('off')
-
   def get_final_bounding_boxes(self):
     return self.final_bounding_boxes
