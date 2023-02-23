@@ -9,4 +9,5 @@ Since the course was focused on feature extraction and image/video processing, t
 - Garbage Segmentation
 
 ---
-## 
+## Training
+[a relative link] (notebooks/demo/train_models.ipynb)
