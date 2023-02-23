@@ -1,2 +1,2 @@
 # GarbageDetectionAndSegmentation
-Term project for the university course in Image, Video and Signal processing
+## Project for the course "Signal, Image and Video" at University of Trento - Artificial Intelligence Systems Degree 2022/2023\\
