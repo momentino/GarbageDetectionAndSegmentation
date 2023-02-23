@@ -8,3 +8,5 @@ Since the course was focused on feature extraction and image/video processing, t
 - Garbage Detection
 - Garbage Segmentation
 
+---
+## 
