@@ -87,7 +87,7 @@ class HeatMap:
     
     return this_frame
 
-  def show(self, frame, path, tdpi = 80):
+  def show(self, frame, tdpi = 80):
       
     mp, tmp, lmp = self.get()
     labeled_img = self.draw(frame)
@@ -99,10 +99,7 @@ class HeatMap:
 
     ax[1].imshow(np.clip(tmp, 0, 255), cmap = 'hot')
     ax[2].imshow(labeled_img)
-<<<<<<< HEAD
-    #cv2.imwrite(path,labeled_img)
-=======
->>>>>>> b3bb26cb64d80b768d61a4fc847b5d77373ced1a
+
     plt.show()
 
     for i in range(3):

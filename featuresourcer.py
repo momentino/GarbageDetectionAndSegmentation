@@ -5,7 +5,7 @@ from utils import convert
 import cv2
 
 class HogFeatureExtractor:
-  def __init__(self, p, start_frame):
+  def __init__(self, p):
     
     self.color_model = p['color_model']
     self.w = p['bounding_box_w']
@@ -21,8 +21,8 @@ class HogFeatureExtractor:
     self.hogA, self.hogB, self.HogC = None, None, None
     self.hogA_img, self.hogB_img, self.hogC_img = None, None, None
     
-    self.RGB_img = start_frame
-    self.new_frame(self.RGB_img)
+    #self.RGB_img = start_frame
+    #self.new_frame(self.RGB_img)
 
   def hog(self, channel):
     features, hog_img = hog(channel, 
@@ -80,7 +80,7 @@ class HogFeatureExtractor:
     return x_start, x_end, y_start, y_end
 
 class CannyFeatureExtractor:
-  def __init__(self, p, start_frame):
+  def __init__(self, p):
     
     self.color_model = p['color_model']
 
@@ -89,14 +89,13 @@ class CannyFeatureExtractor:
 
     self.w = p['bounding_box_w']
     self.h = p['bounding_box_h']
-    
-    self.RGB_img = start_frame
+
     self.ABC_img = None
 
     self.canny_img = None
     self.canny_features = None
 
-    self.new_frame(self.RGB_img)
+
 
   def canny(self, channel):
     #print(" ENTROOOOOOOOOOOOOOOOOO ")
@@ -156,7 +155,6 @@ class CannyFeatureExtractor:
     
     
   def slice(self):
-
     features = self.canny_features
     return features
 

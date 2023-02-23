@@ -5,12 +5,14 @@ from featuresourcer import HogFeatureExtractor, CannyFeatureExtractor
 
 class Slider:
   
-  def __init__(self, sourcer, classifier, increment):
+  def __init__(self, sourcer, classifier, frame, increment):
     self.sourcer = sourcer
     self.classifier = classifier
     self.i = increment
     self.h = sourcer.h
     self.w = sourcer.w
+    self.frame = frame
+    sourcer.new_frame(self.frame)
 
   """ Function that implements the resizing loop for the input image given a certain scale."""
   def pyramid(self,image, scale=1.5, minSize=(64, 48)):
@@ -42,7 +44,6 @@ class Slider:
   def locate(self, image):
     boxes = []
     w_w,w_h = self.w,self.h
-    print("WINDOW SIZE ",w_w," ",w_h)
     # loop over the image pyramid
     scale = 1.5
     iteration = 0
@@ -51,9 +52,8 @@ class Slider:
       if (int(resized.shape[1]/w_w) <= 3 and int(resized.shape[0]/w_h) <= 3):
         # loop over the sliding window for each layer of the pyramid
         step_size = max(1,int(32/(pow(scale,iteration))))
-        #Sprint("STEP SIZE ",step_size)
         for (x, y, window) in self.sliding_window(resized, step_size=step_size, window_size=(w_w, w_h)):
-          # if the window does not meet our desired window size, ignore it
+          # if the window does not meet the desired window size, ignore it
           if window.shape[0] != w_h or window.shape[1] != w_w:
             continue
 
@@ -62,7 +62,6 @@ class Slider:
           elif(type(self.sourcer) is CannyFeatureExtractor):
             features = self.sourcer.slice() # get canny
           if self.classifier.predict(features):
-            #if(iteration==7):
             boxes.append((int(x*math.pow(scale,iteration)), int(y*math.pow(scale,iteration)), (int(w_w*math.pow(scale,iteration)),int(w_h*math.pow(scale,iteration)))))
 
 
